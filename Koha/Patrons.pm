@@ -410,7 +410,7 @@ sub update_category_to {
                 {
                     borrowernumber => $patron->borrowernumber,
                     type           => 'MANUAL',
-                    comment        => $params->{debarredcomment},    # t.ex. 'Låntagaren har fyllt 16 år och behöver fylla i nytt låneavtal.'
+                    comment        => $params->{debarredcomment},
                     expiration     => dt_from_string('9999-12-31'),
                 }
             );
