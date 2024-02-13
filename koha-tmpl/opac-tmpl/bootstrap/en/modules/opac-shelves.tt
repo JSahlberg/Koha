@@ -2,6 +2,8 @@
 [% USE Asset %]
 [% USE Koha %]
 [% USE KohaDates %]
+[% USE KohaPlugins %]
+[% USE To %]
 [% USE AdditionalContents %]
 [% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
 [% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
@@ -412,7 +414,10 @@
                                                         </td>
                                                     [% END %]
                                                     <td>
-                                                        <div class="coverimages">
+                                                        [% IF ( itemsloo.title ) %]
+                                                            [% img_title = itemsloo.title %]
+                                                        [% ELSE %]
+                                                        <div class="coverimages cover-slides itemtype_[% itemsloo.itemtype | html %]" data-isbn="[% To.json(itemsloo.normalized_isbn) | $raw %]" data-imgtitle="[% img_title | html %]">
                                                             <a class="p1" href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% itemsloo.biblionumber | html %]">
                                                                 [% IF ( itemsloo.title ) %]
                                                                     [% img_title = itemsloo.title %]
@@ -828,6 +833,9 @@
 [% Asset.js("lib/hc-sticky.js") | $raw %]
 [% IF OpenLibraryCovers || OpenLibrarySearch %]
     [% Asset.js("js/openlibrary.js") | $raw %]
+[% END %]
+[% IF ( CoverImagePlugins ) %]
+    [% KohaPlugins.get_plugins_opac_cover_images | $raw %]
 [% END %]
 <script>
 var MSG_REMOVE_FROM_LIST = _("Are you sure you want to remove these items from the list?");
