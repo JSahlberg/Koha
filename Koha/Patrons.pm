@@ -28,6 +28,7 @@ use Koha::ArticleRequests;
 use Koha::Patron;
 use Koha::Exceptions::Patron;
 use Koha::Patron::Categories;
+use Koha::Patron::Debarments qw( AddDebarment );
 
 use base qw(Koha::Objects::Mixin::ExtendedAttributes Koha::Objects);
 
@@ -386,7 +387,9 @@ sub search_patrons_to_update_category {
 =head3 update_category_to
 
     Koha::Patrons->search->update_category_to( {
-            category   => $to_category,
+            category         => $to_category,
+            debarred         => $add_debarment,
+            debarredcomment  => $debarredcomment, 
         });
 
 Update supplied patrons from current category to another and take care of guarantor info.
@@ -398,10 +401,21 @@ call search_patrons_to_update to filter the Koha::Patrons set
 sub update_category_to {
     my ( $self, $params ) = @_;
     my $counter = 0;
+    my $debarreddate = dt_from_string();
     while( my $patron = $self->next ) {
         $patron->discard_changes;
         $counter++;
         $patron->categorycode($params->{category})->store();
+        if ($params->{debarred}) {
+            AddDebarment(
+                {
+                    borrowernumber => $patron->borrowernumber,
+                    type           => 'MANUAL',
+                    comment        => $params->{debarredcomment},
+                    expiration     => dt_from_string('9999-12-31'),
+                }
+            );
+        }
     }
     return $counter;
 }
