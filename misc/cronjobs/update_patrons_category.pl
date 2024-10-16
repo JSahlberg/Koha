@@ -42,23 +42,21 @@ update_patrons_category.pl --help | --man
 
 Options:
 
-   --help                        brief help message
-   --man                         full documentation
-   -too_old                      update if over  maximum age for current category
-   -too_young                    update if under minimuum age current category
-   -fo=X --finesover=X           update if fines over X amount
-   -fu=X --finesunder=X          update if fines under X amount
-   -rb=date --regbefore          update if registration date is before given date
-   -ra=date --regafter           update if registration date is after a given date
-   -d --field name=value         where <name> is a column in the borrowers table, patrons will be updated if the field is equal to given <value>
-   --where <conditions>          where clause to add to the query
-   -v -verbose                   verbose mode
-   -c --confirm                  commit changes to db, no action will be taken unless this switch is included
-   -b --branch <branchname>      only deal with patrons from this library/branch
-   -f --from <categorycode>      change patron category from this category
-   -t --to   <categorycode>      change patron category to this category
-   --debarred                    add debarment
-   --comment <debarment comment> add comment for the debarment
+   --help                   brief help message
+   --man                    full documentation
+   -too_old                 update if over  maximum age for current category
+   -too_young               update if under minimuum age current category
+   -fo=X --finesover=X      update if fines over X amount
+   -fu=X --finesunder=X     update if fines under X amount
+   -rb=date --regbefore     update if registration date is before given date
+   -ra=date --regafter      update if registration date is after a given date
+   -d --field name=value    where <name> is a column in the borrowers table, patrons will be updated if the field is equal to given <value>
+   --where <conditions>     where clause to add to the query
+   -v -verbose              verbose mode
+   -c --confirm             commit changes to db, no action will be taken unless this switch is included
+   -b --branch <branchname> only deal with patrons from this library/branch
+   -f --from <categorycode> change patron category from this category
+   -t --to   <categorycode> change patron category to this category
 
 =head1 OPTIONS
 
@@ -134,17 +132,6 @@ e.g.
 --where 'email IS NULL'
 will update all patrons with no value for email
 
-=item B<--debarred>
-
-Debarred. Add this flag to add a debarment for the patron.
-
-=item B<--comment>
-
-Add a comment for the debarment.
-
-e.g.
---comment 'This patron has to renew the agreement.'
-
 =back
 
 =head1 DESCRIPTION
@@ -182,8 +169,6 @@ my $reg_aft;
 my $branch_lim;
 my %fields;
 my @where;
-my $debarred = 0;
-my $debarredcomment;
 
 GetOptions(
     'help|?'          => \$help,
@@ -201,8 +186,6 @@ GetOptions(
     'b|branch=s'      => \$branch_lim,
     'd|field=s'       => \%fields,
     'where=s'         => \@where,
-    'debarred'        => \$debarred,
-    'comment=s'       => \$debarredcomment,
 );
 
 pod2usage(1) if $help;
@@ -296,7 +279,7 @@ if ($verbose) {
     $target_patrons->reset;
 }
 if ($doit) {
-    $actually_updated = $target_patrons->update_category_to( { category => $tocat, debarred => $debarred, debarredcomment => $debarredcomment } );
+    $actually_updated = $target_patrons->update_category_to( { category => $tocat } );
 }
 
 $verbose and print "$patrons_found found, $actually_updated updated\n";
